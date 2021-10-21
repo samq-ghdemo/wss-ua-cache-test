@@ -20,19 +20,11 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -DskipTests=true
 
-    - name: WhiteSource Unified Agent Download
-      id: get-ua-version
-      run: |
-        curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
-        echo Unified Agent downloaded successfully
-        export UA_VERSION=$(java -jar wss-unified-agent.jar -v)
-        echo "UA_VERSION is" $UA_VERSION
-        echo "::set-output name=version::$UA_VERSION"
 
     - uses: actions/cache@v2
       with:
         path: ./wss-unified-agent.jar
-        key: ${{github.event.repository.name}}-${{github.ref}}-${{steps.get-ua-version.outputs.version}}
+        key: ${{github.event.repository.name}}-refs/heads/master-21.9.1
 
     - name: WhiteSource Unified Agent Scan
       env:

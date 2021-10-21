@@ -1,0 +1,30 @@
+name: Whitesource Unified Agent Cache
+
+on:
+  push:
+    branches: [ wss-ua-cache ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+    - name: WhiteSource Unified Agent Download
+      id: get-ua-version
+      run: |
+        curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
+        echo Unified Agent downloaded successfully
+        export UA_VERSION=$(java -jar wss-unified-agent.jar -v)
+        echo "UA_VERSION is" $UA_VERSION
+        echo "::set-output name=version::$UA_VERSION"
+ 
+    - uses: actions/cache@v2
+      with:
+        path: ./wss-unified-agent.jar
+        key: ${{github.event.repository.name}}-${{github.ref}}-${{steps.get-ua-version.outputs.version}}
